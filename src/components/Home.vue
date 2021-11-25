@@ -53,7 +53,6 @@
 
 <script>
 import * as tf from '@tensorflow/tfjs';
-import file from '../model/model.json'
   export default {
     name: 'Home',
 
@@ -68,7 +67,7 @@ import file from '../model/model.json'
     mounted() {
       let that = this;
       async function loadModel(){
-        that.model = await tf.loadLayersModel(file)
+        that.model = await tf.loadLayersModel("http://127.0.0.1:8080/model.json")
         that.modelReady = true;
       }
       loadModel();
@@ -88,7 +87,9 @@ import file from '../model/model.json'
         this.selectedFile = evt.target.files[0]
       },*/
       predictSignature(){
-        const resp = this.model.predict(this.selectedFile)
+        const im = new Image()
+        im.src = this.url
+        const resp = this.model.predict(tf.browser.fromPixels(im,1))
         resp.print()
       },
 
