@@ -18,6 +18,7 @@
       </v-col>
       <v-col cols="12" xl="6" sm="12" >
         <v-file-input
+            show-size
             label="Seleccionar imagen"
             v-model="selectedFile"
             @click="selectImage(true)"
