@@ -4,14 +4,14 @@
       <v-col cols="12" xl="6" sm="12">
         <v-img v-if="isImageSelect"
                :src="url"
-               contain="cover"
+               contain
                min-width="700"
                min-height="700"
         >
         </v-img>
         <v-img v-else
                src="https://socialistmodernism.com/wp-content/uploads/2017/07/placeholder-image.png?w=640"
-               contain="cover"
+               contain
                min-width="700"
                min-height="700">
         </v-img>
@@ -39,6 +39,10 @@
           </h3>
         </v-row>
         <v-container style="height: 80px"></v-container>
+        <v-btn
+        @click="predictSignature">
+          analizar
+        </v-btn>
 
       </v-col>
     </v-row>
@@ -48,15 +52,28 @@
 </template>
 
 <script>
+import * as tf from '@tensorflow/tfjs';
+import file from '../model/model.json'
   export default {
     name: 'Home',
 
     data: () => ({
+      modelReady: false,
       isImageSelect:false,
       personOwn:"--",
       isRealSignature:false,
       selectedFile:null,
     }),
+
+    mounted() {
+      let that = this;
+      async function loadModel(){
+        that.model = await tf.loadLayersModel(file)
+        that.modelReady = true;
+      }
+      loadModel();
+    },
+
     computed: {
       url() {
         if (!this.selectedFile) return
@@ -70,6 +87,10 @@
         console.log(evt);
         this.selectedFile = evt.target.files[0]
       },*/
+      predictSignature(){
+        const resp = this.model.predict(this.selectedFile)
+        resp.print()
+      },
 
       selectImage(value){
         this.isImageSelect = value
