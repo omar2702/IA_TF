@@ -2,19 +2,26 @@
   <v-container>
     <v-row align="center" justify="center" class="text-center">
       <v-col cols="12" xl="6" sm="12">
-        <v-img v-if="isImageSelect"
-               :src="url"
-               contain
-               min-width="700"
-               min-height="700"
-        >
-        </v-img>
-        <v-img v-else
-               src="https://socialistmodernism.com/wp-content/uploads/2017/07/placeholder-image.png?w=640"
-               contain
-               min-width="700"
-               min-height="700">
-        </v-img>
+        <div v-if="isSelectCamera">
+          <PhotoCapture
+              style="width: 700px"
+              v-model="selectedFile" />
+        </div>
+        <div v-else>
+          <v-img v-if="isImageSelect"
+                 :src="url"
+                 contain
+                 min-width="700"
+                 min-height="700"
+          >
+          </v-img>
+          <v-img v-else
+                 src="https://socialistmodernism.com/wp-content/uploads/2017/07/placeholder-image.png?w=640"
+                 contain
+                 min-width="700"
+                 min-height="700">
+          </v-img>
+        </div>
       </v-col>
       <v-col cols="12" xl="6" sm="12" >
         <v-file-input
@@ -28,7 +35,7 @@
         <h2>O</h2>
         <v-container style="height: 20px"></v-container>
         <v-btn color="blue" dark
-               @click="selectImage">
+               @click="selectWebcam">
           Analizar por webcam
         </v-btn>
         <v-container style="height: 80px"></v-container>
@@ -53,12 +60,18 @@
 
 <script>
 import * as tf from '@tensorflow/tfjs';
+import 'vue-media-recorder/src/assets/scss/main.scss'
+import {PhotoCapture} from 'vue-media-recorder'
   export default {
     name: 'Home',
+    components:{
+      PhotoCapture,
+    },
 
     data: () => ({
       modelReady: false,
       isImageSelect:false,
+      isSelectCamera:false,
       personOwn:"--",
       isRealSignature:false,
       selectedFile:null,
@@ -87,15 +100,22 @@ import * as tf from '@tensorflow/tfjs';
         this.selectedFile = evt.target.files[0]
       },*/
       predictSignature(){
-        const im = new Image()
+        const im = new Image(200,200)
         im.src = this.url
+
         const resp = this.model.predict(tf.browser.fromPixels(im,1))
         resp.print()
       },
 
       selectImage(value){
+        this.isSelectCamera = false
         this.isImageSelect = value
+      },
+
+      selectWebcam(){
+        this.isSelectCamera = true
       }
+
     }
   }
 </script>
